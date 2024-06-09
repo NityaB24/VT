@@ -1,0 +1,164 @@
+/* Resetting default margin and padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #27272a;
+    color: #fff;
+    font-family: Arial, sans-serif;
+}
+
+/* Styling for search and upload buttons */
+.search, .upload {
+    margin-top: 20px;
+    font-size: 14px;
+    padding: 12px 20px;
+    color: #fff;
+    background-color: #27272a;
+    border: 2px solid #cdea66;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.search:hover, .upload:hover {
+    background-color: #3a3a3d;
+    border-color: #e6f0c7;
+}
+
+/* Styling for header and details sections */
+.header, .details, .invoice-table, .buttons {
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 800px;
+    border: 2px solid #555;
+    border-radius: 10px;
+    background-color: #252525; /* Dark gray background */
+}
+
+.header div, .details div {
+    margin-bottom: 15px;
+}
+
+/* Input fields styling */
+.details input, .header input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    background-color: #3a3a3a; /* Slightly lighter gray background */
+    color: #ddd; /* Light text color */
+    border: 1px solid #666; /* Dark gray border */
+    border-radius: 5px;
+    transition: border-color 0.3s;
+}
+
+.details input:focus, .header input:focus {
+    outline: none;
+    border-color: #cdea66; /* Yellow border on focus */
+}
+
+/* Table styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    border: 1px solid #444;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #555;
+    color: #cfcfdf;
+    font-size: 16px;
+}
+
+td {
+    font-size: 14px;
+}
+
+/* Button styling */
+.add-btn, .remove-btn {
+    padding: 10px 20px;
+    font-size: 14px;
+    border: 2px solid #cdea66;
+    border-radius: 5px;
+    background-color: #cdea66;
+    color: #000;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.add-btn:hover, .remove-btn:hover {
+    background-color: #e6f0c7;
+    border-color: #3a3a3d;
+}
+
+/* Download button styling */
+#downloadExcel {
+    font-size: 18px;
+    padding: 12px 24px;
+    border: 2px solid #cdea66;
+    border-radius: 5px;
+    background-color: #000;
+    color: #cdea66;
+    cursor: pointer;
+    margin: 20px 0;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+#downloadExcel:hover {
+    background-color: #27272a;
+    border-color: #e6f0c7;
+}
+
+/* Company logo styling */
+#companyLogo {
+    display: block;
+    margin: 10px auto;
+    max-width: 200px;
+}
+
+@media (max-width: 500px) {
+    /* Styling for search and upload buttons */
+    .search, .upload {
+        margin: 0;
+        margin-bottom: 20px; /* Added margin-bottom for spacing */
+    }
+
+    /* Styling for header and details sections */
+    .header, .details {
+        width: 90%;
+        margin: 20px auto;
+    }
+
+    /* Centering input fields */
+    .details input, .header input {
+        width: 100%;
+        margin: 5px auto 15px;
+    }
+
+    /* Table styling */
+    table {
+        margin-top: 0;
+    }
+
+    /* Button styling */
+    .add-btn, .remove-btn, #downloadExcel {
+        padding: 12px 24px;
+        font-size: 16px;
+        margin: 20px 0; /* Adjusted margin */
+    }
+
+    /* Company logo styling */
+    #companyLogo {
+        max-width: 300px; /* Increased max-width */
+    }
+}
