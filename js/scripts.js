@@ -1,18 +1,43 @@
+window.addEventListener('DOMContentLoaded', () => {
+    loadDefaultWorkbook();
+});
 
 document.getElementById('uploadExcel').addEventListener('change', handleFileUpload);
 document.getElementById('companyLogoInput').addEventListener('change', handleLogoUpload);
 
+function loadDefaultWorkbook() {
+    fetch('VT_pricelist.xlsx')
+        .then(response => response.arrayBuffer())
+        .then(data => {
+            let workbook = XLSX.read(data, { type: 'array' });
+            processWorkbook(workbook);
+        })
+        .catch(error => console.error('Error loading default workbook:', error));
+}
+
 function handleFileUpload(event) {
     let file = event.target.files[0];
+
+    if (!file) {
+        return; // No file selected, do nothing
+    }
+
+    // Clear existing table data
+    clearTable('excelDataTable');
+
     let reader = new FileReader();
     reader.onload = function(event) {
         let data = new Uint8Array(event.target.result);
-        let workbook = XLSX.read(data, {type: 'array'});
+        let workbook = XLSX.read(data, { type: 'array' });
         processWorkbook(workbook);
     };
     reader.readAsArrayBuffer(file);
 }
 
+function clearTable(tableId) {
+    let table = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+    table.innerHTML = ''; // Clear all rows from the table body
+}
 function handleLogoUpload(event) {
     let file = event.target.files[0];
     let reader = new FileReader();
@@ -106,9 +131,19 @@ function filterContent(searchText) {
     }
 }
 
+
 document.getElementById('downloadExcel').addEventListener('click', function() {
     let addedItemsTable = document.getElementById('addedItemsTable');
-    let rows = addedItemsTable.rows;
+    let rows = Array.from(addedItemsTable.rows).slice(1); // Exclude header row
+
+    // Sort rows by category name (assuming category name is in the third cell of each row)
+    rows.sort((a, b) => {
+        let categoryNameA = a.cells[2].textContent.toLowerCase(); // Adjust index based on actual column position
+        let categoryNameB = b.cells[2].textContent.toLowerCase(); // Adjust index based on actual column position
+        if (categoryNameA < categoryNameB) return -1;
+        if (categoryNameA > categoryNameB) return 1;
+        return 0;
+    });
 
     let receiverName = document.getElementById('receiverName').value;
     let receiverAddress = document.getElementById('receiverAddress').value;
@@ -121,45 +156,48 @@ document.getElementById('downloadExcel').addEventListener('click', function() {
     // Add company details
     sheet.addRow([]);
     sheet.addRow(['', 'Vimalnath Traders']);
-    sheet.addRow(['', 'L-3,Madhulika Apartment,Opp. Milk Palace,Bhatar Road,Surat']);
-    sheet.addRow(['', '9825456405']);
+    sheet.addRow(['', 'L-3, Madhulika Apartment, Opp. Milk Palace, Bhatar Road, Surat']);
+    sheet.addRow(['', '8799606997']);
     sheet.addRow([]);
     sheet.addRow([]);
     sheet.addRow([]);
+
     // Add receiver details
     sheet.addRow(['Company Details']);
+    sheet.addRow([]);
     sheet.addRow([receiverName]);
     sheet.addRow([receiverAddress]);
     sheet.addRow([receiverPhone]);
     sheet.addRow([]);
+    sheet.addRow(['Product','Size','Category','Rate','Rate Excluding GST'])
+    sheet.addRow([]);
+    // sheet.addRow((row=0)=>{
+    //     row.eachCell((cell) => {
+    //     cell.font = { bold: true };
+    // });
     sheet.eachRow((row) => {
         row.eachCell((cell) => {
             cell.font = { bold: true };
         });
     });
-    
-    // Add items table headers
-    let headers = Array.from(rows[0].cells).map((cell, index) => index < rows[0].cells.length - 1 ? cell.textContent : null).filter(cell => cell !== null);
-    // let headers = Array.from(rows[0].cells).map((cell, index) => index == 2 && index < rows[0].cells.length - 1 ? cell.textContent : null).filter(cell => cell !== null);
-    sheet.addRow(headers);
-    sheet.addRow([]);
-    
-    // Add items table rows
-    for (let i = 1; i < rows.length; i++) {
-        let row = Array.from(rows[i].cells).map((cell, index) => index < rows[i].cells.length - 1 ? cell.textContent : null).filter(cell => cell !== null);
-        sheet.addRow(row);
-    }
+
+
+    // Add sorted items table rows
+    rows.forEach(row => {
+        let rowData = Array.from(row.cells).map(cell => cell.textContent);
+        rowData.splice(-1, 1); // Remove the last "Remove" button cell
+        sheet.addRow(rowData);
+    });
 
     // Auto size columns for better readability
     sheet.columns.forEach((column, index) => {
         if (index < 1) {
-            column.width = 20; // Set dynamic width for first two columns
+            column.width = 25; // Set dynamic width for first column
+        } else if(index == 2){
+            column.width = 18;
         }
-        else if(index == 1 || index==4){
-            column.width = 15;
-        }
-         else {
-            column.width = 10; // Set fixed width for other columns
+        else{
+            column.width = 15; // Set fixed width for other columns
         }
     });
 
@@ -185,30 +223,27 @@ document.getElementById('downloadExcel').addEventListener('click', function() {
                         tl: { col: 0.1, row: 0.1 },
                         ext: { width: 120, height: 120 }
                     });
-                    workbook.xlsx.writeBuffer().then(buffer => {
-                        let blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-                        let url = URL.createObjectURL(blob);
-                        let a = document.createElement('a');
-                        a.href = url;
-                        a.download = 'invoice.xlsx';
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                    });
+                    generateAndDownloadExcel(workbook);
                 };
                 reader.readAsDataURL(blob);
             });
         };
     } else {
-        workbook.xlsx.writeBuffer().then(buffer => {
-            let blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            let url = URL.createObjectURL(blob);
-            let a = document.createElement('a');
-            a.href = url;
-            a.download = 'invoice.xlsx';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        });
+        generateAndDownloadExcel(workbook);
     }
 });
+
+function generateAndDownloadExcel(workbook) {
+    // Sort by category name and generate Excel file
+    workbook.xlsx.writeBuffer().then(buffer => {
+        let blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        let url = URL.createObjectURL(blob);
+        let a = document.createElement('a');
+        a.href = url;
+        a.download = 'invoice.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    });
+}
+

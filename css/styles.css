@@ -85,8 +85,24 @@ td {
     font-size: 14px;
 }
 
+#addedItemsTable{
+    color: #000;
+    background-color: rgba(255, 255, 255, 0.884);
+}
+
+
+.remove-btn{
+    padding: 10px 20px;
+    font-size: 14px;
+    border: 2px solid rgb(239, 102, 102);
+    border-radius: 5px;
+    background-color: rgb(234, 97, 97);
+    color: #000;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+}
 /* Button styling */
-.add-btn, .remove-btn {
+.add-btn {
     padding: 10px 20px;
     font-size: 14px;
     border: 2px solid #cdea66;

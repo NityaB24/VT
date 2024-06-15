@@ -17,6 +17,10 @@
     {
       "src": "images/*",
       "use": "@vercel/static"
+    },
+    {
+      "src": "VT_pricelist.xlsx", 
+      "use": "@vercel/static"
     }
   ],
   "routes": [
