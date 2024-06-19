@@ -6,7 +6,7 @@ document.getElementById('uploadExcel').addEventListener('change', handleFileUplo
 document.getElementById('companyLogoInput').addEventListener('change', handleLogoUpload);
 
 function loadDefaultWorkbook() {
-    fetch('VT_pricelist.xlsx')
+    fetch('VT_price.xlsx')
         .then(response => response.arrayBuffer())
         .then(data => {
             let workbook = XLSX.read(data, { type: 'array' });
