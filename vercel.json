@@ -19,7 +19,7 @@
       "use": "@vercel/static"
     },
     {
-      "src": "VT_pricelist.xlsx", 
+      "src": "VT_price.xlsx", 
       "use": "@vercel/static"
     }
   ],
