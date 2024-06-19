@@ -6,7 +6,7 @@ document.getElementById('uploadExcel').addEventListener('change', handleFileUplo
 document.getElementById('companyLogoInput').addEventListener('change', handleLogoUpload);
 
 function loadDefaultWorkbook() {
-    fetch('VT_pricelist.xlsx')
+    fetch('VT_pricelist1.xlsx')
         .then(response => response.arrayBuffer())
         .then(data => {
             let workbook = XLSX.read(data, { type: 'array' });
@@ -131,7 +131,6 @@ function filterContent(searchText) {
     }
 }
 
-
 document.getElementById('downloadExcel').addEventListener('click', function() {
     let addedItemsTable = document.getElementById('addedItemsTable');
     let rows = Array.from(addedItemsTable.rows).slice(1); // Exclude header row
@@ -155,51 +154,83 @@ document.getElementById('downloadExcel').addEventListener('click', function() {
 
     // Add company details
     sheet.addRow([]);
-    sheet.addRow(['', 'Vimalnath Traders']);
-    sheet.addRow(['', 'L-3, Madhulika Apartment, Opp. Milk Palace, Bhatar Road, Surat']);
-    sheet.addRow(['', '8799606997']);
-    sheet.addRow([]);
+    sheet.addRow(['','', 'Vimalnath Traders']).getCell(3).font = { size:13, italic: true , bold:true };
+    sheet.addRow(['','', 'L-3, Madhulika Apartment, Opp. Milk Palace']).getCell(3).font = {size:13, italic: true,bold:true };
+    sheet.addRow(['','', 'Bhatar Road, Surat-395007']).getCell(3).font = {size:13, italic: true,bold:true };
+    sheet.addRow(['','', '8799606997']).getCell(3).font = {size:13, italic: true,bold:true };
     sheet.addRow([]);
     sheet.addRow([]);
 
+    let underlineRow = sheet.addRow([]);
+    underlineRow.getCell(1).border = { bottom: { style: 'thick' } };
+    underlineRow.getCell(2).border = { bottom: { style: 'thick' } };
+    underlineRow.getCell(3).border = { bottom: { style: 'thick' } };
+    underlineRow.getCell(4).border = { bottom: { style: 'thick' } };
+    underlineRow.getCell(5).border = { bottom: { style: 'thick' } };
+    underlineRow.getCell(6).border = { bottom: { style: 'thick' } };
+    
     // Add receiver details
-    sheet.addRow(['Company Details']);
     sheet.addRow([]);
-    sheet.addRow([receiverName]);
-    sheet.addRow([receiverAddress]);
-    sheet.addRow([receiverPhone]);
+    sheet.addRow(['',receiverName]).getCell(2).font={bold:true};
+    sheet.addRow(['',receiverAddress]).getCell(2).font={bold:true};
+    sheet.addRow(['',receiverPhone]).getCell(2).font={bold:true};
     sheet.addRow([]);
-    sheet.addRow(['Product','Size','Category','Rate','Rate Excluding GST'])
-    sheet.addRow([]);
-    // sheet.addRow((row=0)=>{
-    //     row.eachCell((cell) => {
-    //     cell.font = { bold: true };
-    // });
-    sheet.eachRow((row) => {
-        row.eachCell((cell) => {
-            cell.font = { bold: true };
-        });
+
+    // Set header row bold
+    let headerRow = sheet.addRow(['Sr', 'Product', 'Size', 'Category', 'Rate', 'Rate Excluding GST']);
+    headerRow.eachCell((cell) => {
+        cell.font = { bold: true, size: 13 }; // Increase font size and make it bold
+        cell.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' }
+        };
     });
 
-
-    // Add sorted items table rows
-    rows.forEach(row => {
-        let rowData = Array.from(row.cells).map(cell => cell.textContent);
-        rowData.splice(-1, 1); // Remove the last "Remove" button cell
-        sheet.addRow(rowData);
+    // Add sorted items table rows with serial numbers
+    rows.forEach((row, index) => {
+        let rowData = [index + 1]; // Add serial number starting from 1
+        Array.from(row.cells).slice(0, -1).forEach(cell => { // Exclude the last "Remove" button cell
+            rowData.push(cell.textContent);
+        });
+        let newRow = sheet.addRow(rowData);
+        newRow.eachCell((cell) => {
+            cell.font= {size:13};
+            cell.border = {
+                top: { style: 'thin' },
+                left: { style: 'thin' },
+                bottom: { style: 'thin' },
+                right: { style: 'thin' }
+            };
+        });
     });
 
     // Auto size columns for better readability
     sheet.columns.forEach((column, index) => {
-        if (index < 1) {
-            column.width = 25; // Set dynamic width for first column
-        } else if(index == 2){
+        if(index===0){
+            column.width = 5;
+        }
+        else if (index === 1) {
+            column.width = 25; // Set dynamic width for the first column
+        }else if(index==2){
+            column.width = 10;
+        }
+        else if(index == 5){
             column.width = 18;
         }
-        else{
+        else
+        {
             column.width = 15; // Set fixed width for other columns
         }
     });
+
+    sheet.pageSetup = {
+        fitToPage: true,
+        fitToWidth: 1,
+        fitToHeight: 0, // This ensures all columns fit on one page
+        paperSize: 9, // A4 size
+    };
 
     // Add company logo
     if (companyLogoSrc) {
@@ -221,7 +252,7 @@ document.getElementById('downloadExcel').addEventListener('click', function() {
                     });
                     sheet.addImage(imageId, {
                         tl: { col: 0.1, row: 0.1 },
-                        ext: { width: 120, height: 120 }
+                        ext: { width: 173.33, height: 120 }
                     });
                     generateAndDownloadExcel(workbook);
                 };
